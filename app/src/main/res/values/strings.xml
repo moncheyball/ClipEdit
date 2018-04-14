@@ -10,4 +10,6 @@
 
     <string name="clear_fields">Clear Fields</string>
     <string name="copy_to_clipboard">Copy to Clipboard</string>
+
+    <string name="edit_clipboard">Edit Clipboard</string>
 </resources>

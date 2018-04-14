@@ -24,7 +24,7 @@ public class MainActivity extends AppCompatActivity
 
     // 表示アイテム
     private EditText mEditText;
-    private DrawerLayout mDrawer;
+    private DrawerLayout mDrawerLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity
         if (null != clipboardTexts) {
             // クリップボードの内容をテキストエディタに表示
             mEditText.setText(clipboardTexts[0]);
-            // クリップボードの内容を左メニューに表示
+            //ToDo クリップボードの内容を左メニューに表示
 //            ArrayAdapter<String> drawerList = new ArrayAdapter<>(this,  R.layout.drawer_list_item, clipboardTexts);
 //            mDrawerList.setAdapter(drawerList);
         }
@@ -64,22 +64,25 @@ public class MainActivity extends AppCompatActivity
         });
 
         // 左メニューの設定
-        mDrawer = findViewById(R.id.drawer_layout);
+        mDrawerLayout = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, mDrawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        mDrawer.addDrawerListener(toggle);
+                this, mDrawerLayout, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
         // ナビゲーションバーの設定
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
-    }
 
+        //Todo TEST ：一応これでメニューには表示された！！
+        Menu menuDrawer = navigationView.getMenu();
+        menuDrawer.add("test");
+    }
 
     @Override
     public void onBackPressed() {
-        if (mDrawer.isDrawerOpen(GravityCompat.START)) {
-            mDrawer.closeDrawer(GravityCompat.START);
+        if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
+            mDrawerLayout.closeDrawer(GravityCompat.START);
         } else {
             super.onBackPressed();
         }
@@ -103,7 +106,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            // 設定
+            // TODO 設定
         } else if (id == R.id.action_clear) {
             // クリア：エディットテキストの初期化
             mEditText.getText().clear();
@@ -134,7 +137,7 @@ public class MainActivity extends AppCompatActivity
 
         }
 
-        mDrawer.closeDrawer(GravityCompat.START);
+        mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
@@ -156,6 +159,7 @@ public class MainActivity extends AppCompatActivity
         clipboardManager.setClipboard(viewText);
 
         // 左メニューに表示を更新
+        //ToDo
 //        String[] clipboardTexts = clipboardManager.getClipboardTextList();
 //        if (null != clipboardTexts) {
 //            ArrayAdapter<String> drawerList = new ArrayAdapter<>(this, R.layout.drawer_list_item, clipboardTexts);
