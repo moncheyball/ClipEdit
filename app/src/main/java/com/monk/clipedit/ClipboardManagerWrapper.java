@@ -22,7 +22,7 @@ class ClipboardManagerWrapper {
     static private String[] sClipboardTextList;
     // ClipBoard Text List の最大数
     // (※変更時は SharedPreferencesWrapper の Key も変更する必要あり)
-    private static final int MAX_DATA_SIZE = 6;
+    static final int MAX_DATA_SIZE = 6;
 
     /**
      * コンストラクタ
@@ -101,7 +101,7 @@ class ClipboardManagerWrapper {
 
     ///////////////////////////////////////////////////////////////////////////////////////////////
     //region Private Method
-
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * clipboardTextList の初期化
      * コンストラクタ内から呼び出す
@@ -127,7 +127,7 @@ class ClipboardManagerWrapper {
 
         String primaryClipText = getPrimaryClipText();
         if (null == primaryClipText) {
-            Log.e(TAG, "null == primaryClipText");
+            Log.d(TAG, "null == primaryClipText");
         } else if (!primaryClipText.equals(sClipboardTextList[0])) {
             // 先頭要素とOSのクリップボードの値が異なる場合、
             // sClipboardTextList の先頭にOSのクリップボードの値を挿入

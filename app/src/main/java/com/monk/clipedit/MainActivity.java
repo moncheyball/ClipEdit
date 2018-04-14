@@ -39,14 +39,8 @@ public class MainActivity extends AppCompatActivity
         // 入力エリアの設定
         mEditText = findViewById(R.id.editText);
 
-        // OSのクリップボード 及び DB のデータを取得
-        ClipboardManagerWrapper clipboardManager = new ClipboardManagerWrapper(this);
-        clipboardManager.addPrimaryClipChangedListener();
-        String[] clipboardTexts = clipboardManager.getClipboardTextList();
-        if (null != clipboardTexts) {
-            // クリップボードの内容をテキストエディタに表示
-            mEditText.setText(clipboardTexts[0]);
-        }
+        // OSのクリップボード 及び DB のデータを取得して EditText に反映
+        updateEditText(0);
 
         // Toolbar の設定
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -69,38 +63,49 @@ public class MainActivity extends AppCompatActivity
             public void onDrawerOpened(View drawerView) {
                 // 左メニュー表示時にキーボードを閉じる
                 InputMethodManager inputMethodMgr = (InputMethodManager)getSystemService(INPUT_METHOD_SERVICE);
-                inputMethodMgr.hideSoftInputFromWindow(drawerView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-
+                if (null == inputMethodMgr) {
+                    Log.d(TAG, "null == inputMethodMgr");
+                }
+                else {
+                    inputMethodMgr.hideSoftInputFromWindow(drawerView.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
         };
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
-        
+
         // ナビゲーションバーの生成
-        onCreateNavigationView(clipboardTexts);
+        onCreateNavigationView();
     }
 
     /**
      * NavigationView の生成
-     * @param NavigationTexts NavigationView に表示する文字列のリスト
      */
-    protected void onCreateNavigationView(String[] NavigationTexts) {
+    protected void onCreateNavigationView() {
         // ナビゲーションバーの設定
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
         // クリップボードの内容を左メニューに表示
-        Menu menuDrawer = navigationView.getMenu();
-        for (String NavigationText : NavigationTexts) {
-            if (null == NavigationText) {
-                Log.d(TAG, "null == NavigationText");
-            }
-            else if (NavigationText.isEmpty()) {
-                Log.d(TAG, "NavigationText.isEmpty()");
-            }
-            else {
-                menuDrawer.add(NavigationText);
+        String[] clipboardTexts = getClipboardTexts();
+        if (null == clipboardTexts) {
+            Log.d(TAG, "null == clipboardTexts");
+        }
+        else {
+            int id = 0;
+            Menu menuDrawer = navigationView.getMenu();
+            for (String clipboardText : clipboardTexts) {
+                if (null == clipboardText) {
+                    Log.d(TAG, "null == clipboardText");
+                }
+                else if (clipboardText.isEmpty()) {
+                    Log.d(TAG, "clipboardText.isEmpty()");
+                }
+                else {
+                    menuDrawer.add(R.id.activity_main_drawer, id, Menu.CATEGORY_CONTAINER, clipboardText);
+                }
+                id++;
             }
         }
     }
@@ -146,21 +151,22 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        //TODO 履歴選択時に反映
-        int id = item.getItemId();
+        Log.d(TAG, "clickCopy");
 
-//        if (id == R.id.nav_slideshow) {
-//
-//        } else if (id == R.id.nav_manage) {
-//
-//        }
+        int id = item.getItemId();
+        Log.d(TAG, "item.getItemId() : " + id);
+
+        if (0 <= id && id <= ClipboardManagerWrapper.MAX_DATA_SIZE) {
+            updateEditText(id);
+        }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    ////////// Private Method //////////
+    ///////////////////////////////////////////////////////////////////////////////////////////////
+    //region Private Method
+    ///////////////////////////////////////////////////////////////////////////////////////////////
     /**
      * コピーボタン押下イベント
      */
@@ -176,14 +182,32 @@ public class MainActivity extends AppCompatActivity
 
         String viewText = mEditText.getText().toString();
         clipboardManager.setClipboard(viewText);
-
-        // 左メニューに表示を更新
-        //ToDo
-//        String[] clipboardTexts = clipboardManager.getClipboardTextList();
-//        if (null != clipboardTexts) {
-//            ArrayAdapter<String> drawerList = new ArrayAdapter<>(this, R.layout.drawer_list_item, clipboardTexts);
-//            mDrawerList.setAdapter(drawerList);
-//        }
     }
 
+    /**
+     * OSのクリップボード 及び DB のデータを取得して EditText に反映
+     * @param index 履歴のインデックス
+     */
+    private void updateEditText(int index) {
+        Log.d(TAG, "updateEditText");
+
+        String[] clipboardTexts = getClipboardTexts();
+        if (null == clipboardTexts) {
+            Log.d(TAG, "null != clipboardTexts");
+        }
+        else {
+            // クリップボードの内容をテキストエディタに表示
+            mEditText.setText(clipboardTexts[index]);
+        }
+    }
+
+    /**
+     // OSのクリップボード 及び DB のデータを取得
+     * @return クリップボードの履歴リスト
+     */
+    private String[] getClipboardTexts() {
+        ClipboardManagerWrapper clipboardManager = new ClipboardManagerWrapper(this);
+        clipboardManager.addPrimaryClipChangedListener();
+        return clipboardManager.getClipboardTextList();
+    }
 }
