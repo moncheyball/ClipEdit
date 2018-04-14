@@ -45,9 +45,6 @@ public class MainActivity extends AppCompatActivity
         if (null != clipboardTexts) {
             // クリップボードの内容をテキストエディタに表示
             mEditText.setText(clipboardTexts[0]);
-            //ToDo クリップボードの内容を左メニューに表示
-//            ArrayAdapter<String> drawerList = new ArrayAdapter<>(this,  R.layout.drawer_list_item, clipboardTexts);
-//            mDrawerList.setAdapter(drawerList);
         }
 
         // Toolbar の設定
@@ -70,13 +67,32 @@ public class MainActivity extends AppCompatActivity
         mDrawerLayout.addDrawerListener(toggle);
         toggle.syncState();
 
+        // ナビゲーションバーの生成
+        onCreateNavigationView(clipboardTexts);
+    }
+
+    /**
+     * NavigationView の生成
+     * @param NavigationTexts NavigationView に表示する文字列のリスト
+     */
+    protected void onCreateNavigationView(String[] NavigationTexts) {
         // ナビゲーションバーの設定
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-        //Todo TEST ：一応これでメニューには表示された！！
+        // クリップボードの内容を左メニューに表示
         Menu menuDrawer = navigationView.getMenu();
-        menuDrawer.add("test");
+        for (String NavigationText : NavigationTexts) {
+            if (null == NavigationText) {
+                Log.d(TAG, "null == NavigationText");
+            }
+            else if (NavigationText.isEmpty()) {
+                Log.d(TAG, "NavigationText.isEmpty()");
+            }
+            else {
+                menuDrawer.add(NavigationText);
+            }
+        }
     }
 
     @Override
@@ -121,21 +137,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
+        //TODO 履歴選択時に反映
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
+//        if (id == R.id.nav_slideshow) {
+//
+//        } else if (id == R.id.nav_manage) {
+//
+//        }
 
         mDrawerLayout.closeDrawer(GravityCompat.START);
         return true;
