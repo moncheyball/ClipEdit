@@ -19,16 +19,34 @@ class NotificationWrapper {
 
     private Context mContext;
     private String channelId = "clipedit";
+    private int notifyId = 1;
 
     NotificationWrapper(Context context) {
         this.mContext = context;
     }
 
     /**
+     * Notification を起動する
+     */
+    void launchNotification() {
+        Log.d(TAG, "launchNotification()");
+
+        SharedPreferencesWrapper sharedPreferences = new SharedPreferencesWrapper(this.mContext);
+        boolean isCheck = sharedPreferences.getNotificationSetting();
+        if (isCheck) {
+            startNotification();
+        } else {
+            endNotification();
+        }
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    //region Private Method
+    /**
      * Notification を表示する
      */
-    void setNotification() {
-        Log.d(TAG, "setNotification()");
+    private void startNotification() {
+        Log.d(TAG, "startNotification()");
 
         // Notificationタップ時の起動イベント
         Intent intent = new Intent(Intent.ACTION_MAIN)
@@ -44,12 +62,13 @@ class NotificationWrapper {
             int importance = NotificationManager.IMPORTANCE_NONE;
             NotificationChannel channel = new NotificationChannel(channelId, channelName, importance);
             NotificationManager notificationManager = mContext.getSystemService(NotificationManager.class);
-            if (null != notificationManager) {
+            if (null == notificationManager) {
+                Log.d(TAG, "null == notificationManager");
+            } else {
                 notificationManager.createNotificationChannel(channel);
             }
         }
 
-        int notifyId = 1;
         Notification notification = new NotificationCompat.Builder(mContext, channelId)
                 .setContentIntent(pendingIntent)
                 .setContentTitle(mContext.getResources().getString(R.string.edit_clipboard))
@@ -60,6 +79,17 @@ class NotificationWrapper {
                 .setPriority(NotificationCompat.PRIORITY_MIN)
                 .build();
         NotificationManagerCompat.from(mContext).notify(notifyId, notification);
+    }
+
+    private void endNotification() {
+        Log.d(TAG, "endNotification()");
+
+        NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (null == notificationManager) {
+            Log.d(TAG, "null == notificationManager");
+        } else {
+            notificationManager.cancel(notifyId);
+        }
     }
 
 }

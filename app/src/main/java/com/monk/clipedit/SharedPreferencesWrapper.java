@@ -23,6 +23,9 @@ class SharedPreferencesWrapper {
     private static final String CLIPBOARD_TEXT_03 = "clipboardText03";
     private static final String CLIPBOARD_TEXT_04 = "clipboardText04";
     private static final String CLIPBOARD_TEXT_05 = "clipboardText05";
+    // Notification Setting
+    private static final String SETTINGS_NOTIFICATION = "settingNotification";
+
 
     SharedPreferencesWrapper(Context context) {
         if (null == mSharedPref) {
@@ -30,6 +33,7 @@ class SharedPreferencesWrapper {
         }
     }
 
+    //region ClipboardTextList
     void setClipboardTextList(String[] clipboardTextList) {
         Log.d(TAG, "setClipboardTextList()");
 
@@ -42,11 +46,10 @@ class SharedPreferencesWrapper {
         editor.putString(CLIPBOARD_TEXT_05, clipboardTextList[5]);
         editor.apply();
     }
-
     String[] getClipboardTextList() {
         Log.d(TAG, "getClipboardTextList()");
 
-        String[] retClipboardTextList = {
+        return new String[]{
                 mSharedPref.getString(CLIPBOARD_TEXT_00, null),
                 mSharedPref.getString(CLIPBOARD_TEXT_01, null),
                 mSharedPref.getString(CLIPBOARD_TEXT_02, null),
@@ -54,7 +57,19 @@ class SharedPreferencesWrapper {
                 mSharedPref.getString(CLIPBOARD_TEXT_04, null),
                 mSharedPref.getString(CLIPBOARD_TEXT_05, null)
         };
-        return retClipboardTextList;
+    }
+
+    //region NotificationSetting
+    void setNotificationSetting(boolean flag) {
+        Log.d(TAG, "setNotificationSetting()");
+
+        SharedPreferences.Editor editor = mSharedPref.edit();
+        editor.putBoolean(SETTINGS_NOTIFICATION, flag);
+        editor.apply();
+    }
+    boolean getNotificationSetting() {
+        Log.d(TAG, "getNotificationSetting()");
+        return mSharedPref.getBoolean(SETTINGS_NOTIFICATION, false);
     }
 
 }

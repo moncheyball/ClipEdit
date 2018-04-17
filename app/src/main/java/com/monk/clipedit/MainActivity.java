@@ -1,6 +1,7 @@
 package com.monk.clipedit;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
@@ -34,7 +35,7 @@ public class MainActivity extends AppCompatActivity
 
         // 常駐Notification設定
         NotificationWrapper notification = new NotificationWrapper(this);
-        notification.setNotification();
+        notification.launchNotification();
 
         // 入力エリアの設定
         mEditText = findViewById(R.id.editText);
@@ -123,6 +124,13 @@ public class MainActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+
+        // Notification 設定をチェックボックスに反映
+        SharedPreferencesWrapper sharedPreferences = new SharedPreferencesWrapper(this);
+        boolean isCheck = sharedPreferences.getNotificationSetting();
+        MenuItem item = menu.getItem(0);
+        item.setChecked(isCheck);
+
         return true;
     }
 
@@ -132,12 +140,20 @@ public class MainActivity extends AppCompatActivity
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         boolean retSelected = true;
-
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            // TODO 設定
+        if (id == R.id.action_notification_setting) {
+            // Notification 設定チェックボックス：設定に反映
+            item.setChecked(!item.isChecked());
+            boolean isChecked = item.isChecked();
+            SharedPreferencesWrapper sharedPreferences = new SharedPreferencesWrapper(this);
+            sharedPreferences.setNotificationSetting(isChecked);
+
+            // Notification 表示の更新
+            NotificationWrapper notification = new NotificationWrapper(this);
+            notification.launchNotification();
+
         } else if (id == R.id.action_clear) {
             // クリア：エディットテキストの初期化
             mEditText.getText().clear();
@@ -150,7 +166,7 @@ public class MainActivity extends AppCompatActivity
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Log.d(TAG, "clickCopy");
 
         int id = item.getItemId();
